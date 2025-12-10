@@ -7,31 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          # install libtinfo6 (replacement for libtinfo5) and equivs to create a dummy package
-          sudo apt-get install -y --no-install-recommends libtinfo6 equivs
-      
-          # create a minimal control file for a dummy libtinfo5 package that "Provides" libtinfo5
-          cat > libtinfo5-control <<'EOF'
-          Section: misc
-          Priority: optional
-          Standards-Version: 3.9.2
-          Package: libtinfo5
-          Provides: libtinfo5
-          Description: Dummy package to satisfy dependencies that request libtinfo5
-           This package is an empty shim that indicates libtinfo5 is present.
-          EOF
-      
-          # build and install the dummy package
-          equivs-build libtinfo5-control
-          sudo dpkg -i libtinfo5_*.deb || true
-      
-          # (Optional) common packages needed for buildozer / android builds:
-          sudo apt-get install -y --no-install-recommends openjdk-11-jdk zip unzip build-essential python3-dev
-
       - name: Build APK
         uses: digreatbrian/buildozer-action@v2
         with:
